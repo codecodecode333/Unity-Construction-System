@@ -10,6 +10,9 @@ public class ConstructionSystem : MonoBehaviour
     [Header("Grid")]
     [SerializeField] private float cellSize = 1f;
 
+    [SerializeField] Transform placementPreview;
+
+
     private Vector3 currentSnapPosition;
     private Vector3 currentHitPoint;
     private Vector2Int currentCell;
@@ -19,7 +22,16 @@ public class ConstructionSystem : MonoBehaviour
     {
         if (mainCamera == null)
             mainCamera = Camera.main;
-        Debug.Log(mainCamera);
+
+        if (placementPreview == null && transform.parent != null)
+        {
+            placementPreview = transform.parent.Find("PlacementPreview");
+        }
+
+        if (placementPreview != null)
+        {
+            placementPreview.gameObject.SetActive(false);
+        }
     }
 
     private void Update()
@@ -30,7 +42,11 @@ public class ConstructionSystem : MonoBehaviour
     private void UpdateMouseWorldPosition()
     {
         if (mainCamera == null)
+        {
+            hasHit = false;
+            HidePreview();
             return;
+        }
 
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
@@ -42,9 +58,9 @@ public class ConstructionSystem : MonoBehaviour
             currentCell = WorldToCell(currentHitPoint);
             currentSnapPosition = CellToWorld(currentCell);
 
-            Debug.Log($"Hit : {currentHitPoint}");
-            Debug.Log($"Cell : {currentCell}");
-            Debug.Log($"Snap : {currentSnapPosition}");
+            ShowPreview();
+        } else {
+            HidePreview();
         }
     }
 
@@ -61,6 +77,23 @@ public class ConstructionSystem : MonoBehaviour
         return new Vector2Int(Mathf.RoundToInt(worldPosition.x / cellSize), Mathf.RoundToInt(worldPosition.z / cellSize));
     }
 
+    private void ShowPreview()
+    {
+        if (placementPreview == null)
+            return;
+
+        placementPreview.position = currentSnapPosition;
+        placementPreview.gameObject.SetActive(true);
+    }
+
+    private void HidePreview()
+    {
+        if (placementPreview == null)
+            return;
+            
+        placementPreview.gameObject.SetActive(false);
+    }
+
     private void OnDrawGizmos()
     {
         if (!hasHit)
@@ -73,6 +106,11 @@ public class ConstructionSystem : MonoBehaviour
         Gizmos.DrawSphere(currentSnapPosition, 0.15f);
 
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireCube(currentSnapPosition, new Vector3(cellSize, 0.1f, cellSize));
+        Vector3 gizmoCenter = currentSnapPosition + Vector3.up * 0.02f;
+
+        Gizmos.DrawWireCube(
+            gizmoCenter,
+            new Vector3(cellSize, 0.02f, cellSize)
+        );
     }
 }
