@@ -12,6 +12,7 @@ public class ConstructionSystem : MonoBehaviour
 
     private Vector3 currentSnapPosition;
     private Vector3 currentHitPoint;
+    private Vector2Int currentCell;
     private bool hasHit;
 
     private void Awake()
@@ -38,19 +39,26 @@ public class ConstructionSystem : MonoBehaviour
         if (hasHit)
         {
             currentHitPoint = hit.point;
-            currentSnapPosition = SnapToGrid(currentHitPoint);
+            currentCell = WorldToCell(currentHitPoint);
+            currentSnapPosition = CellToWorld(currentCell);
 
             Debug.Log($"Hit : {currentHitPoint}");
+            Debug.Log($"Cell : {currentCell}");
             Debug.Log($"Snap : {currentSnapPosition}");
         }
     }
 
-    private Vector3 SnapToGrid(Vector3 worldPosition)
+    private Vector3 CellToWorld(Vector2Int cell)
     {
-        float x = Mathf.Round(worldPosition.x / cellSize) * cellSize;
-        float z = Mathf.Round(worldPosition.z / cellSize) * cellSize;
+        float x = cell.x * cellSize;
+        float z = cell.y * cellSize;
 
         return new Vector3(x, 0f, z);
+    }
+
+    private Vector2Int WorldToCell(Vector3 worldPosition)
+    {
+        return new Vector2Int(Mathf.RoundToInt(worldPosition.x / cellSize), Mathf.RoundToInt(worldPosition.z / cellSize));
     }
 
     private void OnDrawGizmos()
@@ -60,5 +68,11 @@ public class ConstructionSystem : MonoBehaviour
 
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(currentHitPoint, 0.15f);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(currentSnapPosition, 0.15f);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireCube(currentSnapPosition, new Vector3(cellSize, 0.1f, cellSize));
     }
 }
