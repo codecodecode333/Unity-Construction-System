@@ -109,6 +109,15 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PlaceBuilding"",
+                    ""type"": ""Button"",
+                    ""id"": ""5a900c73-9168-44b7-96dd-3e6305c69c26"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -133,6 +142,17 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
                     ""action"": ""CancelConstruction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5ac6b060-36bc-4e7a-9a02-db402cc753bc"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PlaceBuilding"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -143,6 +163,7 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
         m_Construction = asset.FindActionMap("Construction", throwIfNotFound: true);
         m_Construction_SelectBasicBuilding = m_Construction.FindAction("SelectBasicBuilding", throwIfNotFound: true);
         m_Construction_CancelConstruction = m_Construction.FindAction("CancelConstruction", throwIfNotFound: true);
+        m_Construction_PlaceBuilding = m_Construction.FindAction("PlaceBuilding", throwIfNotFound: true);
     }
 
     ~@ConstructionInputActions()
@@ -225,6 +246,7 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
     private List<IConstructionActions> m_ConstructionActionsCallbackInterfaces = new List<IConstructionActions>();
     private readonly InputAction m_Construction_SelectBasicBuilding;
     private readonly InputAction m_Construction_CancelConstruction;
+    private readonly InputAction m_Construction_PlaceBuilding;
     /// <summary>
     /// Provides access to input actions defined in input action map "Construction".
     /// </summary>
@@ -244,6 +266,10 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
         /// Provides access to the underlying input action "Construction/CancelConstruction".
         /// </summary>
         public InputAction @CancelConstruction => m_Wrapper.m_Construction_CancelConstruction;
+        /// <summary>
+        /// Provides access to the underlying input action "Construction/PlaceBuilding".
+        /// </summary>
+        public InputAction @PlaceBuilding => m_Wrapper.m_Construction_PlaceBuilding;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -276,6 +302,9 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
             @CancelConstruction.started += instance.OnCancelConstruction;
             @CancelConstruction.performed += instance.OnCancelConstruction;
             @CancelConstruction.canceled += instance.OnCancelConstruction;
+            @PlaceBuilding.started += instance.OnPlaceBuilding;
+            @PlaceBuilding.performed += instance.OnPlaceBuilding;
+            @PlaceBuilding.canceled += instance.OnPlaceBuilding;
         }
 
         /// <summary>
@@ -293,6 +322,9 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
             @CancelConstruction.started -= instance.OnCancelConstruction;
             @CancelConstruction.performed -= instance.OnCancelConstruction;
             @CancelConstruction.canceled -= instance.OnCancelConstruction;
+            @PlaceBuilding.started -= instance.OnPlaceBuilding;
+            @PlaceBuilding.performed -= instance.OnPlaceBuilding;
+            @PlaceBuilding.canceled -= instance.OnPlaceBuilding;
         }
 
         /// <summary>
@@ -347,5 +379,12 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCancelConstruction(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "PlaceBuilding" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPlaceBuilding(InputAction.CallbackContext context);
     }
 }

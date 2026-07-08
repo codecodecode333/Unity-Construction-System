@@ -8,4 +8,6 @@ public class BuildingDefinition : ScriptableObject
 {
     [SerializeField] private string displayName;
     [SerializeField] private GameObject buildingPrefab;
+
+    public GameObject BuildingPrefab => buildingPrefab;
 }

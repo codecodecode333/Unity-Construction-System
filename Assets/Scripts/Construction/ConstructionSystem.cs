@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class ConstructionSystem : MonoBehaviour
 {
@@ -15,6 +16,11 @@ public class ConstructionSystem : MonoBehaviour
 
     [Header("Building Selection")]
     [SerializeField] private BuildingDefinition basicBuildingDefinition;
+
+    [Header("Placement")]
+    [SerializeField] private Transform placedBuildingsParent;
+
+    private readonly HashSet<Vector2Int> occupiedCells = new HashSet<Vector2Int>();
 
     private BuildingDefinition selectedBuilding;
     private ConstructionInputActions constructionInputActions;
@@ -56,6 +62,7 @@ public class ConstructionSystem : MonoBehaviour
 
         constructionInputActions.Construction.SelectBasicBuilding.performed += OnSelectBasicBuilding;
         constructionInputActions.Construction.CancelConstruction.performed += OnCancelConstruction;
+        constructionInputActions.Construction.PlaceBuilding.performed += OnPlaceBuilding;
 
         constructionInputActions.Construction.Enable();
     }
@@ -67,6 +74,7 @@ public class ConstructionSystem : MonoBehaviour
 
         constructionInputActions.Construction.SelectBasicBuilding.performed -= OnSelectBasicBuilding;
         constructionInputActions.Construction.CancelConstruction.performed -= OnCancelConstruction;
+        constructionInputActions.Construction.PlaceBuilding.performed -= OnPlaceBuilding;
 
         constructionInputActions.Construction.Disable();
     }
@@ -79,6 +87,11 @@ public class ConstructionSystem : MonoBehaviour
     private void OnCancelConstruction(InputAction.CallbackContext context)
     {
         CancelBuildingSelection();
+    }
+
+    private void OnPlaceBuilding(InputAction.CallbackContext context)
+    {
+        TryPlaceCurrentBuilding();
     }
 
     private void SelectBuilding(BuildingDefinition definition)
@@ -94,6 +107,30 @@ public class ConstructionSystem : MonoBehaviour
     {
         selectedBuilding = null;
         UpdatePreviewVisibility();
+    }
+
+    private void TryPlaceCurrentBuilding()
+    {
+        if (selectedBuilding == null)
+            return;
+
+        if (!hasHit)
+            return;
+
+        if (selectedBuilding.BuildingPrefab == null)
+            return;
+
+        if (occupiedCells.Contains(currentCell))
+            return;
+
+        Instantiate(
+            selectedBuilding.BuildingPrefab,
+            currentSnapPosition,
+            Quaternion.identity,
+            placedBuildingsParent
+        );
+
+        occupiedCells.Add(currentCell);
     }
 
     private void UpdatePreviewVisibility()
