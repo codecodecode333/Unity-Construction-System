@@ -1,0 +1,55 @@
+{
+    "version": 1,
+    "name": "ConstructionInputActions",
+    "maps": [
+        {
+            "name": "Construction",
+            "id": "c91cc9f9-c5df-4ded-aed5-da6821a529b9",
+            "actions": [
+                {
+                    "name": "SelectBasicBuilding",
+                    "type": "Button",
+                    "id": "300ac477-783f-4a38-8443-585b8d862597",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CancelConstruction",
+                    "type": "Button",
+                    "id": "01ce6d21-1709-4a5f-b23d-10d9e8babb7b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4a3f4b4b-56bc-40da-ba56-ef4aa6391767",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SelectBasicBuilding",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0efdbd5c-098e-4d42-9a68-5bdc3dd4a800",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CancelConstruction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

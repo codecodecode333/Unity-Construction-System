@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ConstructionSystem : MonoBehaviour
 {
@@ -12,11 +13,18 @@ public class ConstructionSystem : MonoBehaviour
 
     [SerializeField] Transform placementPreview;
 
+    [Header("Building Selection")]
+    [SerializeField] private BuildingDefinition basicBuildingDefinition;
+
+    private BuildingDefinition selectedBuilding;
+    private ConstructionInputActions constructionInputActions;
 
     private Vector3 currentSnapPosition;
     private Vector3 currentHitPoint;
     private Vector2Int currentCell;
     private bool hasHit;
+
+    
 
     private void Awake()
     {
@@ -32,11 +40,71 @@ public class ConstructionSystem : MonoBehaviour
         {
             placementPreview.gameObject.SetActive(false);
         }
+
+        constructionInputActions = new ConstructionInputActions();
     }
 
     private void Update()
     {
-        UpdateMouseWorldPosition();
+        UpdateMouseWorldPosition();  
+    }
+
+    private void OnEnable()
+    {
+        if (constructionInputActions == null)
+            return;
+
+        constructionInputActions.Construction.SelectBasicBuilding.performed += OnSelectBasicBuilding;
+        constructionInputActions.Construction.CancelConstruction.performed += OnCancelConstruction;
+
+        constructionInputActions.Construction.Enable();
+    }
+
+    private void OnDisable()
+    {
+        if (constructionInputActions == null)
+            return;
+
+        constructionInputActions.Construction.SelectBasicBuilding.performed -= OnSelectBasicBuilding;
+        constructionInputActions.Construction.CancelConstruction.performed -= OnCancelConstruction;
+
+        constructionInputActions.Construction.Disable();
+    }
+
+    private void OnSelectBasicBuilding(InputAction.CallbackContext context)
+    {
+        SelectBuilding(basicBuildingDefinition);
+    }
+
+    private void OnCancelConstruction(InputAction.CallbackContext context)
+    {
+        CancelBuildingSelection();
+    }
+
+    private void SelectBuilding(BuildingDefinition definition)
+    {
+        if (definition == null)
+            return;
+
+        selectedBuilding = definition;
+        UpdatePreviewVisibility();
+    }
+
+    private void CancelBuildingSelection()
+    {
+        selectedBuilding = null;
+        UpdatePreviewVisibility();
+    }
+
+    private void UpdatePreviewVisibility()
+    {
+        if (!hasHit || selectedBuilding == null)
+        {
+            HidePreview();
+            return;
+        }
+
+        ShowPreview();
     }
 
     private void UpdateMouseWorldPosition()
@@ -56,12 +124,10 @@ public class ConstructionSystem : MonoBehaviour
         {
             currentHitPoint = hit.point;
             currentCell = WorldToCell(currentHitPoint);
-            currentSnapPosition = CellToWorld(currentCell);
-
-            ShowPreview();
-        } else {
-            HidePreview();
+            currentSnapPosition = CellToWorld(currentCell);      
         }
+
+        UpdatePreviewVisibility();
     }
 
     private Vector3 CellToWorld(Vector2Int cell)
@@ -90,7 +156,7 @@ public class ConstructionSystem : MonoBehaviour
     {
         if (placementPreview == null)
             return;
-            
+
         placementPreview.gameObject.SetActive(false);
     }
 
@@ -113,4 +179,5 @@ public class ConstructionSystem : MonoBehaviour
             new Vector3(cellSize, 0.02f, cellSize)
         );
     }
+
 }

@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3809232f905f2440a0fb5d93d5d39eb, type: 3}
   m_Name: BD_NewBuilding
   m_EditorClassIdentifier: Assembly-CSharp::BuildingDefinition
-  displayName: 
-  buildingPrefab: {fileID: 0}
+  displayName: Basic Building
+  buildingPrefab: {fileID: 9138157384565235475, guid: 0d2891e6832978446824eefe40a0e3b8, type: 3}
