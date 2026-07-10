@@ -20,6 +20,11 @@ public class ConstructionSystem : MonoBehaviour
     [Header("Placement")]
     [SerializeField] private Transform placedBuildingsParent;
 
+    [Header("Preview Validity")]
+    [SerializeField] private Renderer placementPreviewRenderer;
+    [SerializeField] private Material validPreviewMaterial;
+    [SerializeField] private Material invalidPreviewMaterial;
+
     private readonly HashSet<Vector2Int> occupiedCells = new HashSet<Vector2Int>();
 
     private BuildingDefinition selectedBuilding;
@@ -111,16 +116,7 @@ public class ConstructionSystem : MonoBehaviour
 
     private void TryPlaceCurrentBuilding()
     {
-        if (selectedBuilding == null)
-            return;
-
-        if (!hasHit)
-            return;
-
-        if (selectedBuilding.BuildingPrefab == null)
-            return;
-
-        if (occupiedCells.Contains(currentCell))
+        if (!CanPlaceAtCurrentCell())
             return;
 
         Instantiate(
@@ -131,6 +127,8 @@ public class ConstructionSystem : MonoBehaviour
         );
 
         occupiedCells.Add(currentCell);
+
+        UpdatePreviewValidityVisual();
     }
 
     private void UpdatePreviewVisibility()
@@ -141,6 +139,7 @@ public class ConstructionSystem : MonoBehaviour
             return;
         }
 
+        UpdatePreviewValidityVisual();
         ShowPreview();
     }
 
@@ -195,6 +194,42 @@ public class ConstructionSystem : MonoBehaviour
             return;
 
         placementPreview.gameObject.SetActive(false);
+    }
+
+    private void UpdatePreviewValidityVisual()
+    {
+        if (placementPreviewRenderer == null)
+            return;
+
+        bool canPlace = CanPlaceAtCurrentCell();
+
+        if (canPlace && validPreviewMaterial != null)
+        {
+            placementPreviewRenderer.sharedMaterial = validPreviewMaterial;
+            return;
+        }
+
+        if (!canPlace && invalidPreviewMaterial != null)
+        {
+            placementPreviewRenderer.sharedMaterial = invalidPreviewMaterial;
+        }
+    }
+
+    private bool CanPlaceAtCurrentCell()
+    {
+        if (selectedBuilding == null)
+            return false;
+
+        if (!hasHit)
+            return false;
+
+        if (selectedBuilding.BuildingPrefab == null)
+            return false;
+
+        if (occupiedCells.Contains(currentCell))
+            return false;
+
+        return true;
     }
 
     private void OnDrawGizmos()
