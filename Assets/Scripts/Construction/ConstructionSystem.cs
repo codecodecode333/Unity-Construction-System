@@ -25,7 +25,7 @@ public class ConstructionSystem : MonoBehaviour
     [SerializeField] private Material validPreviewMaterial;
     [SerializeField] private Material invalidPreviewMaterial;
 
-    private readonly HashSet<Vector2Int> occupiedCells = new HashSet<Vector2Int>();
+    private readonly Dictionary<Vector2Int, GameObject> placedBuildingsByCell = new Dictionary<Vector2Int, GameObject>();
 
     private BuildingDefinition selectedBuilding;
     private ConstructionInputActions constructionInputActions;
@@ -34,6 +34,7 @@ public class ConstructionSystem : MonoBehaviour
     private Vector3 currentHitPoint;
     private Vector2Int currentCell;
     private bool hasHit;
+    private bool isRemoveMode;
 
     
 
@@ -68,6 +69,7 @@ public class ConstructionSystem : MonoBehaviour
         constructionInputActions.Construction.SelectBasicBuilding.performed += OnSelectBasicBuilding;
         constructionInputActions.Construction.CancelConstruction.performed += OnCancelConstruction;
         constructionInputActions.Construction.PlaceBuilding.performed += OnPlaceBuilding;
+        constructionInputActions.Construction.ToggleRemoveMode.performed += OnToggleRemoveMode;
 
         constructionInputActions.Construction.Enable();
     }
@@ -80,6 +82,7 @@ public class ConstructionSystem : MonoBehaviour
         constructionInputActions.Construction.SelectBasicBuilding.performed -= OnSelectBasicBuilding;
         constructionInputActions.Construction.CancelConstruction.performed -= OnCancelConstruction;
         constructionInputActions.Construction.PlaceBuilding.performed -= OnPlaceBuilding;
+        constructionInputActions.Construction.ToggleRemoveMode.performed -= OnToggleRemoveMode;
 
         constructionInputActions.Construction.Disable();
     }
@@ -96,7 +99,41 @@ public class ConstructionSystem : MonoBehaviour
 
     private void OnPlaceBuilding(InputAction.CallbackContext context)
     {
+        if (isRemoveMode)
+        {
+            TryRemoveCurrentBuilding();
+            return;
+        }
+
         TryPlaceCurrentBuilding();
+    }
+
+    private void TryRemoveCurrentBuilding()
+    {
+        if (!hasHit)
+            return;
+
+        if (!placedBuildingsByCell.TryGetValue(currentCell, out GameObject building))
+            return;
+
+        placedBuildingsByCell.Remove(currentCell);
+
+        if (building != null)
+        {
+            Destroy(building);
+        }
+    }
+
+    private void OnToggleRemoveMode(InputAction.CallbackContext context)
+    {
+        EnterRemoveMode();
+    }
+
+    private void EnterRemoveMode()
+    {
+        isRemoveMode = true;
+        selectedBuilding = null;
+        HidePreview();
     }
 
     private void SelectBuilding(BuildingDefinition definition)
@@ -104,12 +141,15 @@ public class ConstructionSystem : MonoBehaviour
         if (definition == null)
             return;
 
+        isRemoveMode = false;
         selectedBuilding = definition;
         UpdatePreviewVisibility();
     }
+    
 
     private void CancelBuildingSelection()
     {
+        isRemoveMode = false;
         selectedBuilding = null;
         UpdatePreviewVisibility();
     }
@@ -119,14 +159,14 @@ public class ConstructionSystem : MonoBehaviour
         if (!CanPlaceAtCurrentCell())
             return;
 
-        Instantiate(
+        GameObject placedBuilding = Instantiate(
             selectedBuilding.BuildingPrefab,
             currentSnapPosition,
             Quaternion.identity,
             placedBuildingsParent
         );
 
-        occupiedCells.Add(currentCell);
+        placedBuildingsByCell.Add(currentCell, placedBuilding);
 
         UpdatePreviewValidityVisual();
     }
@@ -217,6 +257,9 @@ public class ConstructionSystem : MonoBehaviour
 
     private bool CanPlaceAtCurrentCell()
     {
+        if (isRemoveMode)
+            return false;
+
         if (selectedBuilding == null)
             return false;
 
@@ -226,7 +269,7 @@ public class ConstructionSystem : MonoBehaviour
         if (selectedBuilding.BuildingPrefab == null)
             return false;
 
-        if (occupiedCells.Contains(currentCell))
+        if (placedBuildingsByCell.ContainsKey(currentCell))
             return false;
 
         return true;

@@ -423,6 +423,9 @@ MonoBehaviour:
   placementPreview: {fileID: 1784835978}
   basicBuildingDefinition: {fileID: 11400000, guid: 36b5591fdbbe1984fa97f69f620c6c9b, type: 2}
   placedBuildingsParent: {fileID: 589382052}
+  placementPreviewRenderer: {fileID: 88671458}
+  validPreviewMaterial: {fileID: 2100000, guid: 7958adbfa5716954785f98ec1ea67af5, type: 2}
+  invalidPreviewMaterial: {fileID: 2100000, guid: 58e6bbb7c6f25884280b6968e397a142, type: 2}
 --- !u!1 &589382051
 GameObject:
   m_ObjectHideFlags: 0

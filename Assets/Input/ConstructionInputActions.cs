@@ -118,6 +118,15 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToggleRemoveMode"",
+                    ""type"": ""Button"",
+                    ""id"": ""b3b8df40-3d57-41ef-94f1-62ec10f40527"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -153,6 +162,17 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
                     ""action"": ""PlaceBuilding"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f26e6572-09f5-4081-a72c-13b7609bdf1f"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleRemoveMode"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -164,6 +184,7 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
         m_Construction_SelectBasicBuilding = m_Construction.FindAction("SelectBasicBuilding", throwIfNotFound: true);
         m_Construction_CancelConstruction = m_Construction.FindAction("CancelConstruction", throwIfNotFound: true);
         m_Construction_PlaceBuilding = m_Construction.FindAction("PlaceBuilding", throwIfNotFound: true);
+        m_Construction_ToggleRemoveMode = m_Construction.FindAction("ToggleRemoveMode", throwIfNotFound: true);
     }
 
     ~@ConstructionInputActions()
@@ -247,6 +268,7 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
     private readonly InputAction m_Construction_SelectBasicBuilding;
     private readonly InputAction m_Construction_CancelConstruction;
     private readonly InputAction m_Construction_PlaceBuilding;
+    private readonly InputAction m_Construction_ToggleRemoveMode;
     /// <summary>
     /// Provides access to input actions defined in input action map "Construction".
     /// </summary>
@@ -270,6 +292,10 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
         /// Provides access to the underlying input action "Construction/PlaceBuilding".
         /// </summary>
         public InputAction @PlaceBuilding => m_Wrapper.m_Construction_PlaceBuilding;
+        /// <summary>
+        /// Provides access to the underlying input action "Construction/ToggleRemoveMode".
+        /// </summary>
+        public InputAction @ToggleRemoveMode => m_Wrapper.m_Construction_ToggleRemoveMode;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -305,6 +331,9 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
             @PlaceBuilding.started += instance.OnPlaceBuilding;
             @PlaceBuilding.performed += instance.OnPlaceBuilding;
             @PlaceBuilding.canceled += instance.OnPlaceBuilding;
+            @ToggleRemoveMode.started += instance.OnToggleRemoveMode;
+            @ToggleRemoveMode.performed += instance.OnToggleRemoveMode;
+            @ToggleRemoveMode.canceled += instance.OnToggleRemoveMode;
         }
 
         /// <summary>
@@ -325,6 +354,9 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
             @PlaceBuilding.started -= instance.OnPlaceBuilding;
             @PlaceBuilding.performed -= instance.OnPlaceBuilding;
             @PlaceBuilding.canceled -= instance.OnPlaceBuilding;
+            @ToggleRemoveMode.started -= instance.OnToggleRemoveMode;
+            @ToggleRemoveMode.performed -= instance.OnToggleRemoveMode;
+            @ToggleRemoveMode.canceled -= instance.OnToggleRemoveMode;
         }
 
         /// <summary>
@@ -386,5 +418,12 @@ public partial class @ConstructionInputActions: IInputActionCollection2, IDispos
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPlaceBuilding(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleRemoveMode" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleRemoveMode(InputAction.CallbackContext context);
     }
 }
