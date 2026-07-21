@@ -25,6 +25,9 @@ public class ConstructionSystem : MonoBehaviour
     [SerializeField] private Material validPreviewMaterial;
     [SerializeField] private Material invalidPreviewMaterial;
 
+    [Header("Removal Preview")]
+    [SerializeField] private Transform removalPreview;
+
     private readonly Dictionary<Vector2Int, GameObject> placedBuildingsByCell = new Dictionary<Vector2Int, GameObject>();
 
     private BuildingDefinition selectedBuilding;
@@ -51,6 +54,11 @@ public class ConstructionSystem : MonoBehaviour
         if (placementPreview != null)
         {
             placementPreview.gameObject.SetActive(false);
+        }
+
+        if (removalPreview != null)
+        {
+            removalPreview.gameObject.SetActive(false);
         }
 
         constructionInputActions = new ConstructionInputActions();
@@ -122,6 +130,9 @@ public class ConstructionSystem : MonoBehaviour
         {
             Destroy(building);
         }
+
+        UpdateRemovalPreviewVisibility();
+        UpdatePreviewValidityVisual();
     }
 
     private void OnToggleRemoveMode(InputAction.CallbackContext context)
@@ -134,6 +145,7 @@ public class ConstructionSystem : MonoBehaviour
         isRemoveMode = true;
         selectedBuilding = null;
         HidePreview();
+        UpdateRemovalPreviewVisibility();
     }
 
     private void SelectBuilding(BuildingDefinition definition)
@@ -143,6 +155,8 @@ public class ConstructionSystem : MonoBehaviour
 
         isRemoveMode = false;
         selectedBuilding = definition;
+
+        HideRemovalPreview();
         UpdatePreviewVisibility();
     }
     
@@ -151,7 +165,9 @@ public class ConstructionSystem : MonoBehaviour
     {
         isRemoveMode = false;
         selectedBuilding = null;
+
         UpdatePreviewVisibility();
+        HideRemovalPreview();
     }
 
     private void TryPlaceCurrentBuilding()
@@ -204,6 +220,7 @@ public class ConstructionSystem : MonoBehaviour
         }
 
         UpdatePreviewVisibility();
+        UpdateRemovalPreviewVisibility();
     }
 
     private Vector3 CellToWorld(Vector2Int cell)
@@ -273,6 +290,40 @@ public class ConstructionSystem : MonoBehaviour
             return false;
 
         return true;
+    }
+
+    private void ShowRemovalPreview()
+    {
+        if (removalPreview == null)
+            return;
+
+        removalPreview.position = currentSnapPosition;
+        removalPreview.gameObject.SetActive(true);
+    }
+
+    private void HideRemovalPreview()
+    {
+        if (removalPreview == null)
+            return;
+
+        removalPreview.gameObject.SetActive(false);
+    }
+
+    private void UpdateRemovalPreviewVisibility()
+    {
+        if (!isRemoveMode || !hasHit)
+        {
+            HideRemovalPreview();
+            return;
+        }
+
+        if (!placedBuildingsByCell.ContainsKey(currentCell))
+        {
+            HideRemovalPreview();
+            return;
+        }
+
+        ShowRemovalPreview();
     }
 
     private void OnDrawGizmos()
